@@ -19,15 +19,15 @@ def create_grids(H, W, dx, dy, device='cuda'):
     return KX, KY, k_sq
 
 def gradient(f, KX, KY):
-    F_f = fft2(f)
-    fdx = ifft2(1j * KX * F_f).real
-    fdy = ifft2(1j * KY * F_f).real
+    F_f = fft2(f, norm='ortho')
+    fdx = ifft2(1j * KX * F_f, norm='ortho').real
+    fdy = ifft2(1j * KY * F_f, norm='ortho').real
     return fdx, fdy
 
 def divergence(fx, fy, KX, KY):
-    F_fx = fft2(fx)
-    F_fy = fft2(fy)
-    div_f = ifft2(1j * KX * F_fx + 1j * KY * F_fy).real
+    F_fx = fft2(fx, norm='ortho')
+    F_fy = fft2(fy, norm='ortho')
+    div_f = ifft2(1j * KX * F_fx + 1j * KY * F_fy, norm='ortho').real
     return div_f
 
 def single_tie(I_0, dIdz, lam, dx, dy, device='cuda'):
@@ -37,8 +37,8 @@ def single_tie(I_0, dIdz, lam, dx, dy, device='cuda'):
 
     KX, KY, k_sq = create_grids(H, W, dx, dy, device)      
              
-    Fphi = -fft2(-k * dIdz / Imax) / k_sq      
-    phi = ifft2(Fphi).real      
+    Fphi = -fft2(-k * dIdz / Imax, norm='ortho') / k_sq      
+    phi = ifft2(Fphi, norm='ortho').real      
             
     dphidx, dphidy = gradient(phi, KX, KY)      
            
